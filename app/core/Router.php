@@ -1,19 +1,57 @@
 <?php
 namespace App\Core;
 
+//Enhanced router with middleware support
 class Router {
     private $routes = [];
     private $params = [];
 
-    public function addRoute($method, $path, $handler) {
+    // public function addRoute($method, $path, $handler) {
+    //     $this->routes[] = [
+    //         'method' => strtoupper($method),
+    //         'path' => $path,
+    //         'handler' => $handler
+    //     ];
+    // }
+
+    // public function dispatch($uri, $method) {
+    //     $uri = parse_url($uri, PHP_URL_PATH);
+    //     $uri = trim($uri, '/');
+
+    //     foreach ($this->routes as $route) {
+    //         if ($this->match($route['path'], $uri) && 
+    //             $route['method'] === strtoupper($method)) {
+                
+    //             $handler = $route['handler'];
+    //             if (is_callable($handler)) {
+    //                 call_user_func_array($handler, $this->params);
+    //             } elseif (is_string($handler)) {
+    //                 list($controller, $action) = explode('@', $handler);
+    //                 $this->callController($controller, $action);
+    //             }
+    //             return;
+    //         }
+    //     }
+
+    //     http_response_code(404);
+    //     echo json_encode(['error' => 'Endpoint not found']);
+    // }
+
+    public function addRoute(
+        string $method, 
+        string $path, 
+        $handler, 
+        array $middleware = []
+    ): void {
         $this->routes[] = [
             'method' => strtoupper($method),
             'path' => $path,
-            'handler' => $handler
+            'handler' => $handler,
+            'middleware' => $middleware
         ];
     }
 
-    public function dispatch($uri, $method) {
+    public function dispatch(string $uri, string $method): void {
         $uri = parse_url($uri, PHP_URL_PATH);
         $uri = trim($uri, '/');
 
@@ -21,19 +59,35 @@ class Router {
             if ($this->match($route['path'], $uri) && 
                 $route['method'] === strtoupper($method)) {
                 
-                $handler = $route['handler'];
-                if (is_callable($handler)) {
-                    call_user_func_array($handler, $this->params);
-                } elseif (is_string($handler)) {
-                    list($controller, $action) = explode('@', $handler);
-                    $this->callController($controller, $action);
+                // Execute middleware
+                if (!$this->executeMiddleware($route['middleware'])) {
+                    return;
                 }
+
+                $this->executeHandler($route['handler']);
                 return;
             }
         }
 
-        http_response_code(404);
-        echo json_encode(['error' => 'Endpoint not found']);
+        $this->notFound();
+    }
+
+    private function executeMiddleware(array $middleware): bool {
+        foreach ($middleware as $middlewareClass) {
+            $middlewareInstance = new $middlewareClass();
+            if (!$middlewareInstance->handle()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function executeHandler($handler): void {
+        if (is_callable($handler)) {
+            call_user_func_array($handler, $this->params);
+        } elseif (is_string($handler)) {
+            $this->callController($handler);
+        }
     }
 
     private function match($routePath, $requestUri) {
