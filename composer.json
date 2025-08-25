@@ -1,0 +1,14 @@
+{
+    "name": "wfp-php/backend",
+    "description": "WFP Backend in Pure PHP 8",
+    "type": "project",
+    "require": {
+        "php": ">=8.0",
+        "ext-pdo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "app/"
+        }
+    }
+}
