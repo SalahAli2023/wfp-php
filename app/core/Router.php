@@ -1,7 +1,6 @@
 <?php
 namespace App\Core;
 
-//Enhanced router with middleware support
 class Router {
     private $routes = [];
     private $params = [];
