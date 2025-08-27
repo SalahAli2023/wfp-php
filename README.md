@@ -55,7 +55,8 @@
 - Composer (for PHP dependencies)
 - Git
 
-### 1. Clone the Repository
-```bash
-git clone https://github.com/SalahAli2023/wfp-php.git
-cd wfp-php
+## Backend
+https://github.com/SalahAli2023/wfp-php
+
+## FrontEnd
+https://github.com/SalahAli2023/wfp-org-using-tailwind-vue
