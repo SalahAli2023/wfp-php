@@ -14,6 +14,7 @@ class AuthController {
     }
 
     public function register() {
+        echo "1";
         $data = json_decode(file_get_contents('php://input'), true);
         
         // Validation
@@ -42,6 +43,7 @@ class AuthController {
     }
 
     public function login() {
+        echo "1";
         $data = json_decode(file_get_contents('php://input'), true);
         
         if (!isset($data['email']) || !isset($data['password'])) {
@@ -78,5 +80,31 @@ class AuthController {
             return;
         }
         echo json_encode(['user' => $user]);
+    }
+
+    public function updateProfile() {
+        $user = $this->session->get('user');
+        if (!$user) {
+            $this->response->unauthorized();
+            return;
+        }
+
+        $data = $this->request->getJson();
+        
+        // Validation and update logic here
+        // ...
+    }
+
+    public function changePassword() {
+        $user = $this->session->get('user');
+        if (!$user) {
+            $this->response->unauthorized();
+            return;
+        }
+
+        $data = $this->request->getJson();
+        
+        // Password change logic here
+        // ...
     }
 }
