@@ -1,11 +1,13 @@
 {
-    "name": "wfp-org/backend",
     "description": "WFP Backend in Pure PHP 8",
     "type": "project",
     "require": {
         "php": ">=8.0",
         "ext-pdo": "*",
         "ext-json": "*"
+    },
+    "dependencies": {
+    "axios": "^1.11.0"
     },
     "autoload": {
         "psr-4": {
