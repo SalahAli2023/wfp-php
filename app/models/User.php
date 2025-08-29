@@ -29,7 +29,7 @@ class User {
         $sql = "SELECT * FROM users WHERE email = :email";
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':email' => $email]);
-        return $stmt->fetch();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function findById($id) {
@@ -37,5 +37,32 @@ class User {
         $stmt = $this->db->prepare($sql);
         $stmt->execute([':id' => $id]);
         return $stmt->fetch();
+    }
+
+    public function update($id, $data) {
+        try {
+            $stmt = $this->db->prepare("UPDATE users SET name = :name, email = :email, updated_at = NOW() WHERE id = :id");
+            return $stmt->execute([
+                ':name' => $data['name'],
+                ':email' => $data['email'],
+                ':id' => $id
+            ]);
+        } catch (PDOException $e) {
+            error_log("Update user error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function updatePassword($id, $password) {
+        try {
+            $stmt = $this->db->prepare("UPDATE users SET password = :password, updated_at = NOW() WHERE id = :id");
+            return $stmt->execute([
+                ':password' => password_hash($password, PASSWORD_DEFAULT),
+                ':id' => $id
+            ]);
+        } catch (PDOException $e) {
+            error_log("Update password error: " . $e->getMessage());
+            return false;
+        }
     }
 }

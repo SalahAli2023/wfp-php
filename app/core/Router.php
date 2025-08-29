@@ -1,40 +1,14 @@
 <?php
 namespace App\Core;
-
+use App\Core\Response;
 class Router {
     private $routes = [];
     private $params = [];
+    private Response $response;
 
-    // public function addRoute($method, $path, $handler) {
-    //     $this->routes[] = [
-    //         'method' => strtoupper($method),
-    //         'path' => $path,
-    //         'handler' => $handler
-    //     ];
-    // }
-
-    // public function dispatch($uri, $method) {
-    //     $uri = parse_url($uri, PHP_URL_PATH);
-    //     $uri = trim($uri, '/');
-
-    //     foreach ($this->routes as $route) {
-    //         if ($this->match($route['path'], $uri) && 
-    //             $route['method'] === strtoupper($method)) {
-                
-    //             $handler = $route['handler'];
-    //             if (is_callable($handler)) {
-    //                 call_user_func_array($handler, $this->params);
-    //             } elseif (is_string($handler)) {
-    //                 list($controller, $action) = explode('@', $handler);
-    //                 $this->callController($controller, $action);
-    //             }
-    //             return;
-    //         }
-    //     }
-
-    //     http_response_code(404);
-    //     echo json_encode(['error' => 'Endpoint not found']);
-    // }
+    public function __construct() {
+        $this->response = new Response();
+    }
 
     public function addRoute(
         string $method, 
@@ -68,7 +42,7 @@ class Router {
             }
         }
 
-        $this->notFound();
+        $this->response->notFound();
     }
 
     private function executeMiddleware(array $middleware): bool {
@@ -83,9 +57,9 @@ class Router {
 
     private function executeHandler($handler): void {
         if (is_callable($handler)) {
-            call_user_func_array($handler, $this->params);
+                call_user_func_array($handler, array_values($this->params));
         } elseif (is_string($handler)) {
-            $this->callController($handler);
+            $this->callController($handler, $this->params);
         }
     }
 
@@ -109,16 +83,17 @@ class Router {
         return true;
     }
 
-    private function callController($controller, $action) {
+    private function callController(string $handler, array $params = []): void {
+        list($controller, $action) = explode('@', $handler);
         $controller = "App\\Controllers\\" . $controller;
+        
         if (class_exists($controller)) {
             $controllerInstance = new $controller();
             if (method_exists($controllerInstance, $action)) {
-                call_user_func_array([$controllerInstance, $action], $this->params);
+                call_user_func_array([$controllerInstance, $action], array_values($params));
                 return;
             }
         }
-        http_response_code(404);
-        echo json_encode(['error' => 'Controller or action not found']);
+        $this->response->notFound();
     }
 }

@@ -1,16 +1,22 @@
 <?php
 namespace App\Core;
 
-/**
- * Session management with security features
- * Prevents fixation and hijacking attacks
- */
+/* Session management with security features
+ * Prevents fixation and hijacking attacks */
+
 class Session {
     public function __construct() {
         if (session_status() === PHP_SESSION_NONE) {
-            session_start();
+            session_start([
+                'cookie_lifetime' => 86400, // 24 hours
+                'cookie_secure' => false,
+                'cookie_httponly' => true,
+                'cookie_samesite' => 'Lax'
+            ]);
         }
-        
+            if (empty($_SESSION['session_id'])) {
+            $_SESSION['session_id'] = session_id();
+        }
         // Regenerate ID periodically to prevent fixation
         if (!isset($_SESSION['last_regeneration'])) {
             $this->regenerate();
