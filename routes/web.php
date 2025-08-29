@@ -23,6 +23,14 @@ $router->addRoute('POST', '/api/v1/projects', 'ProjectController@store');
 $router->addRoute('PUT', '/api/v1/projects/:id', 'ProjectController@update');
 $router->addRoute('DELETE', '/api/v1/projects/:id', 'ProjectController@delete');
 
+// Donations routes
+$router->addRoute('GET', '/api/v1/donations', 'DonationController@index', [AdminMiddleware::class]);
+$router->addRoute('GET', '/api/v1/donations/:id', 'DonationController@show', [AdminMiddleware::class]);
+$router->addRoute('POST', '/api/v1/donations', 'DonationController@create');
+$router->addRoute('PUT', '/api/v1/donations/:id/status', 'DonationController@updateStatus', [AdminMiddleware::class]);
+$router->addRoute('GET', '/api/v1/donations/stats', 'DonationController@stats', [AdminMiddleware::class]);
+$router->addRoute('GET', '/api/v1/projects/:id/donations-total', 'DonationController@projectTotal');
+
 // Reports routes
 $router->addRoute('GET', '/api/v1/admin/reports/donations', 'ReportsController@getDonationsReport', [AdminMiddleware::class]);
 $router->addRoute('GET', '/api/v1/admin/reports/projects', 'ReportsController@getProjectsReport', [AdminMiddleware::class]);
