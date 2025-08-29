@@ -1,7 +1,5 @@
 <?php
 use App\Core\Router;
-use App\Controllers\AuthController;
-use App\Controllers\ProjectController;
 use App\Middleware\AdminMiddleware;
 
 $router = new Router();

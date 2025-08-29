@@ -62,7 +62,7 @@ class AuthController {
         // Create session
         $this->session->set('user', $user);
 
-        $this->response->success(['user' => $user ,'message' => 'Login successful',]);
+        $this->response->success(['user' => $user ,'message' => 'Login successful']);
     }
 
     public function logout() {
