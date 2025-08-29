@@ -1,7 +1,7 @@
 <?php
 namespace Database\Seeds;
 
-/**
+/*
  * Main database seeder
  * Runs all individual seeders in proper order
  */
@@ -20,6 +20,11 @@ class DatabaseSeeder {
         $projectsSeeder->truncate();
         $projectsSeeder->run();
 
+        // Then run donations
+        $donationsSeeder = new DonationsSeeder();
+        $donationsSeeder->truncate();
+        $donationsSeeder->run();
+
         echo "<br>Database seeding completed successfully!<br>";
     }
 
@@ -32,6 +37,9 @@ class DatabaseSeeder {
 
         $projectsSeeder = new ProjectsSeeder();
         $projectsSeeder->run();
+
+        $donationsSeeder = new DonationsSeeder();
+        $donationsSeeder->run();
 
         echo "<br>Additional data added successfully!<br>";
     }
